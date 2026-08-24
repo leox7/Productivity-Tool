@@ -1,11 +1,17 @@
 const AppError = require('../utils/AppError');
 
-// Minimal version for Phase 3 so thrown errors come back as JSON instead of
-// HTML stack traces. Phase 7 expands this into the full validation/error pass.
-// eslint-disable-next-line no-unused-vars
+
 function errorMiddleware(err, req, res, next) {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({ error: err.message });
+  }
+
+  // Thrown by express.json(); the client's fault, not a server failure.
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Request body is not valid JSON' });
+  }
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Request body is too large' });
   }
 
   console.error(err);
