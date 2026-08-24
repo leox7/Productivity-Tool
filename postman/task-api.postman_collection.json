@@ -366,8 +366,10 @@
                   "  tasks.forEach(t => pm.expect(t.user_id).to.eql(me));",
                   "});",
                   "pm.test('tasks with no due date sort last', () => {",
-                  "  const idx = tasks.findIndex(t => t.due_date === null);",
-                  "  if (idx !== -1) pm.expect(idx).to.eql(tasks.length - 1);",
+                  "  const first = tasks.findIndex(t => t.due_date === null);",
+                  "  if (first === -1) return;",
+                  "  const trailing = tasks.slice(first).every(t => t.due_date === null);",
+                  "  pm.expect(trailing, 'every task after the first undated one is also undated').to.be.true;",
                   "});"
                 ]
               }

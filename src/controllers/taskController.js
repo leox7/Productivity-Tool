@@ -8,6 +8,18 @@ const STATUSES = ['PENDING', 'COMPLETED', 'OVERDUE'];
 // these key names, so this allowlist is what keeps req.body out of the SQL.
 const UPDATABLE = ['title', 'description', 'priority', 'due_date'];
 
+// Guards the :id route param. Without this a non-numeric id reaches MySQL and
+// behaves inconsistently: in a SELECT the bad conversion is only a warning
+// (no rows -> 404), but in a DELETE/UPDATE strict mode raises it to an error,
+// which surfaced as a 500. Rejecting it here keeps every route on 404.
+function parseId(value) {
+  const id = Number(value);
+  if (!Number.isInteger(id) || id < 1) {
+    throw new AppError(404, 'Task not found');
+  }
+  return id;
+}
+
 function parseTitle(value) {
   if (typeof value !== 'string' || value.trim() === '') {
     throw new AppError(400, 'title is required');
@@ -61,7 +73,7 @@ async function listTasks(req, res, next) {
 
 async function getTask(req, res, next) {
   try {
-    const task = await taskService.findById(req.userId, req.params.id);
+    const task = await taskService.findById(req.userId, parseId(req.params.id));
     if (!task) throw new AppError(404, 'Task not found');
     res.json({ task });
   } catch (err) {
@@ -90,7 +102,7 @@ async function updateTask(req, res, next) {
       throw new AppError(400, `Provide at least one of: ${UPDATABLE.join(', ')}`);
     }
 
-    const task = await taskService.update(req.userId, req.params.id, fields);
+    const task = await taskService.update(req.userId, parseId(req.params.id), fields);
     if (!task) throw new AppError(404, 'Task not found');
     res.json({ task });
   } catch (err) {
@@ -100,7 +112,7 @@ async function updateTask(req, res, next) {
 
 async function completeTask(req, res, next) {
   try {
-    const task = await taskService.complete(req.userId, req.params.id);
+    const task = await taskService.complete(req.userId, parseId(req.params.id));
     if (!task) throw new AppError(404, 'Task not found');
     res.json({ task });
   } catch (err) {
@@ -110,7 +122,7 @@ async function completeTask(req, res, next) {
 
 async function deleteTask(req, res, next) {
   try {
-    const deleted = await taskService.remove(req.userId, req.params.id);
+    const deleted = await taskService.remove(req.userId, parseId(req.params.id));
     if (!deleted) throw new AppError(404, 'Task not found');
     res.status(204).send();
   } catch (err) {
