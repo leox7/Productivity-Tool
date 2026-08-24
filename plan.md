@@ -16,7 +16,7 @@ data. Keep everything simple and explainable.
 - [x] Folder structure: config / controllers / services / routes / middleware / utils
 - [x] Connect to MySQL, confirm connection on server start
 
-## Phase 2 — Database
+## Phase 2 — Database ✅
 Create migration for two tables:
 
 ```sql
