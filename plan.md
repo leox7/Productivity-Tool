@@ -56,21 +56,26 @@ Notes:
 - [x] `authMiddleware` — verifies JWT, attaches `req.userId`. Every protected
       route reads the user from this, never from the request body.
 
-## Phase 4 — Tasks CRUD
-- [ ] `POST /api/tasks` — create task for `req.userId`
-- [ ] `GET /api/tasks` — list current user's tasks, support `?status=` and `?due=`
-- [ ] `GET /api/tasks/:id` — single task, query always includes `AND user_id = ?`
-- [ ] `PATCH /api/tasks/:id` — update, same ownership check
-- [ ] `PATCH /api/tasks/:id/complete` — sets `completed_at = NOW()`
-- [ ] `DELETE /api/tasks/:id` — same ownership check
+## Phase 4 — Tasks CRUD ✅
+- [x] `POST /api/tasks` — create task for `req.userId`
+- [x] `GET /api/tasks` — list current user's tasks, support `?status=` and `?due=`
+      (`?due=` accepts `today`, `week`, or an exact `YYYY-MM-DD`)
+- [x] `GET /api/tasks/:id` — single task, query always includes `AND user_id = ?`
+- [x] `PATCH /api/tasks/:id` — update, same ownership check
+- [x] `PATCH /api/tasks/:id/complete` — sets `completed_at = NOW()`
+- [x] `DELETE /api/tasks/:id` — same ownership check
+
+A task owned by someone else returns 404 (not 403), so the API never reveals
+that another user's task exists.
 
 Ownership rule (applies to every task query):
 ```sql
 SELECT * FROM tasks WHERE id = ? AND user_id = ?
 ```
 
-## Phase 5 — Status logic (derived, not stored)
-Computed in the query, not looped over in JS:
+## Phase 5 — Status logic (derived, not stored) ✅
+Implemented as `STATUS_SQL` in `src/services/taskService.js` (needed by the
+Phase 4 `?status=` filter). Computed in the query, not looped over in JS:
 ```sql
 CASE
   WHEN completed_at IS NOT NULL THEN 'COMPLETED'
@@ -106,5 +111,7 @@ WHERE user_id = ?
 
 ## Explicit simplifications (state these if asked)
 - Single JWT access token, no refresh token flow
-- Due-date comparisons assume UTC, no per-user timezone handling
+- Due-date comparisons assume UTC, no per-user timezone handling. Enforced in
+  `src/config/db.js`: mysql2 uses `timezone: 'Z'` and each connection runs
+  `SET time_zone = '+00:00'` so `NOW()`/`CURDATE()` are UTC too.
 - No pagination on task list (fine at this scale, would add `LIMIT/OFFSET` later)
