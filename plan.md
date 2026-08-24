@@ -85,8 +85,8 @@ END AS status
 ```
 Used both for `GET /api/tasks?status=overdue` filtering and for the dashboard.
 
-## Phase 6 — Dashboard
-- [ ] `GET /api/dashboard` — one aggregate query, no per-task JS math:
+## Phase 6 — Dashboard ✅
+- [x] `GET /api/dashboard` — one aggregate query, no per-task JS math:
 ```sql
 SELECT
   COUNT(*) AS totalTasks,
@@ -97,6 +97,12 @@ SELECT
 FROM tasks
 WHERE user_id = ?
 ```
+
+Implemented with one change: `pendingTasks` uses
+`(due_date >= NOW() OR due_date IS NULL)`. A task with no due date satisfies
+neither `>= NOW()` nor `< NOW()`, so as written above it landed in no bucket and
+the counts disagreed with `?status=PENDING`. With the fix,
+`completed + pending + overdue = total`.
 
 ## Phase 7 — Validation & error handling
 - [ ] Basic input checks: `title` required, `due_date` valid, `priority` in allowed set
