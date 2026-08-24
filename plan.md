@@ -49,11 +49,11 @@ Notes:
 - No `status` column. Status is derived from `completed_at` and `due_date`, not stored.
 - Indexes support the two things every query filters/sorts by: the owning user, and due date.
 
-## Phase 3 — Auth
-- [ ] `POST /api/auth/register` — hash password with bcrypt, insert user
-- [ ] `POST /api/auth/login` — verify password, issue JWT
-- [ ] `GET /api/auth/me` — return current user from token
-- [ ] `authMiddleware` — verifies JWT, attaches `req.userId`. Every protected
+## Phase 3 — Auth ✅
+- [x] `POST /api/auth/register` — hash password with bcrypt, insert user
+- [x] `POST /api/auth/login` — verify password, issue JWT
+- [x] `GET /api/auth/me` — return current user from token
+- [x] `authMiddleware` — verifies JWT, attaches `req.userId`. Every protected
       route reads the user from this, never from the request body.
 
 ## Phase 4 — Tasks CRUD
