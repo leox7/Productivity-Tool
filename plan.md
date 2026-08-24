@@ -12,9 +12,9 @@ data. Keep everything simple and explainable.
 - Postman for manual testing
 
 ## Phase 1 — Project setup
-- [ ] Init repo, package.json, .env (DB creds, JWT secret)
-- [ ] Folder structure: config / controllers / services / routes / middleware / utils
-- [ ] Connect to MySQL, confirm connection on server start
+- [x] Init repo, package.json, .env (DB creds, JWT secret)
+- [x] Folder structure: config / controllers / services / routes / middleware / utils
+- [x] Connect to MySQL, confirm connection on server start
 
 ## Phase 2 — Database
 Create migration for two tables:
