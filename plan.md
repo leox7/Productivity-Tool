@@ -16,7 +16,7 @@ data. Keep everything simple and explainable.
 - [x] Folder structure: config / controllers / services / routes / middleware / utils
 - [x] Connect to MySQL, confirm connection on server start
 
-## Phase 2 — Database ✅
+## Phase 2 — Database 
 Create migration for two tables:
 
 ```sql
@@ -49,14 +49,14 @@ Notes:
 - No `status` column. Status is derived from `completed_at` and `due_date`, not stored.
 - Indexes support the two things every query filters/sorts by: the owning user, and due date.
 
-## Phase 3 — Auth ✅
+## Phase 3 — Auth 
 - [x] `POST /api/auth/register` — hash password with bcrypt, insert user
 - [x] `POST /api/auth/login` — verify password, issue JWT
 - [x] `GET /api/auth/me` — return current user from token
 - [x] `authMiddleware` — verifies JWT, attaches `req.userId`. Every protected
       route reads the user from this, never from the request body.
 
-## Phase 4 — Tasks CRUD ✅
+## Phase 4 — Tasks CRUD 
 - [x] `POST /api/tasks` — create task for `req.userId`
 - [x] `GET /api/tasks` — list current user's tasks, support `?status=` and `?due=`
       (`?due=` accepts `today`, `week`, or an exact `YYYY-MM-DD`)
@@ -73,7 +73,7 @@ Ownership rule (applies to every task query):
 SELECT * FROM tasks WHERE id = ? AND user_id = ?
 ```
 
-## Phase 5 — Status logic (derived, not stored) ✅
+## Phase 5 — Status logic (derived, not stored) 
 Implemented as `STATUS_SQL` in `src/services/taskService.js` (needed by the
 Phase 4 `?status=` filter). Computed in the query, not looped over in JS:
 ```sql
@@ -85,7 +85,7 @@ END AS status
 ```
 Used both for `GET /api/tasks?status=overdue` filtering and for the dashboard.
 
-## Phase 6 — Dashboard ✅
+## Phase 6 — Dashboard 
 - [x] `GET /api/dashboard` — one aggregate query, no per-task JS math:
 ```sql
 SELECT
